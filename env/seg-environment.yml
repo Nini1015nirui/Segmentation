@@ -1,0 +1,45 @@
+name: seg
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  # GPU-enabled PyTorch 2.2.1 (CUDA 12.1)
+  - pytorch=2.2.1
+  - torchvision=0.17.1
+  - torchaudio=2.2.1
+  - pytorch-cuda=12.1
+  # Useful build/runtime deps
+  - numpy=1.26.4
+  - ninja
+  - packaging
+  - einops
+  - transformers
+  - tqdm
+  - scipy=1.11.*
+  - scikit-learn
+  - scikit-image=0.25.*
+  - simpleitk>=2.2.1
+  - pandas
+  - graphviz
+  - python-graphviz
+  - tifffile
+  - requests
+  - nibabel
+  - matplotlib
+  - seaborn
+  - imagecodecs
+  - yacs
+  - opencv
+  - git
+  - pip:
+      # causal-conv1d works with torch 2.2.1/cu121
+      - causal-conv1d>=1.2,<2
+      # Mamba-SSM core library (pinned)
+      - mamba-ssm==2.2.5
+      # nnUNetv2 python deps not available on conda
+      - dynamic-network-architectures>=0.2
+      - acvl-utils>=0.2

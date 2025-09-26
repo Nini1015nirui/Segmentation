@@ -1,0 +1,27 @@
+# Python/cache
+__pycache__/
+*.py[cod]
+*.so
+.ipynb_checkpoints/
+.pytest_cache/
+
+# IDE/project files
+.idea/
+.vscode/
+
+# Build & packaging artifacts
+*.egg-info/
+dist/
+build/
+
+# Logs & temp
+*.log
+nohup.out
+*.tmp
+
+# Data outputs (keep raw data local, untracked)
+data/
+TA/
+
+# OS files
+.DS_Store
