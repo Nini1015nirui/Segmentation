@@ -75,6 +75,12 @@ conda env update -n seg -f env/seg-environment.yml
 conda activate seg
 ```
 
+- What this YAML includes (runtime-complete):
+  - PyTorch 2.2.1 + CUDA 12.1 runtime
+  - mamba-ssm==2.2.5, causal-conv1d>=1.2,<2
+  - nnUNetv2 required deps: monai==1.3.0, batchgenerators>=0.25, dicom2nifti, medpy
+  - common IO/vision/scientific stack (SimpleITK, scikit-image, nibabel, opencv, etc.)
+
 - Install the project package to provide `nnUNetv2_*` commands:
 
 ```bash
@@ -118,6 +124,12 @@ PY
 ```bash
 bash scripts/fix_seg_env.sh
 ```
+
+
+### Choosing your Mamba path
+
+- Path A (stay on Torch 2.2.1 + cu121): rebuild mamba-ssm from source using `scripts/fix_seg_env.sh` (uses gcc/g++/nvcc; the script installs what it needs).
+- Path B (often simpler): upgrade to Torch 2.4.1+cu121, then install `mamba-ssm==2.2.5` wheels. See the section below “Enable True Mamba-SSM (CUDA)”.
 
 
 ## Enable True Mamba-SSM (CUDA)
