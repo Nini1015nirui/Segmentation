@@ -29,5 +29,12 @@ TA/
 # Local environments
 env/
 
+# Upstream project: include code, ignore its data/logs
+upstream-LightM-UNet/data/
+upstream-LightM-UNet/TA/
+upstream-LightM-UNet/logs/
+upstream-LightM-UNet/runs/
+upstream-LightM-UNet/wandb/
+
 # OS files
 .DS_Store
