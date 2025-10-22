@@ -1,9 +1,3 @@
-[submodule "third_party/causal-conv1d"]
-	path = third_party/causal-conv1d
-	url = https://github.com/Dao-AILab/causal-conv1d.git
-[submodule "third_party/mamba"]
-	path = third_party/mamba
-	url = https://github.com/state-spaces/mamba.git
 [submodule "upstream-LightM-UNet"]
 	path = upstream-LightM-UNet
 	url = https://github.com/Nini1015nirui/LightM-UNet
