@@ -1,4 +1,37 @@
+## 🚀 快速使用指南
 
+### 训练
+```bash
+# 场景1: 第一次训练
+bash scripts/start_training.sh
+bash scripts/start_training.sh  # Epoch 0 → 300
+
+# 场景2: 训练中断，需要继续
+bash scripts/resume_training.sh 
+bash scripts/resume_training.sh  # 从上次中断处继续
+```
+
+### 推理与可视化（训练完成后）
+```bash
+# 一键执行：后处理 + TTA + 可视化
+bash scripts/run_postprocess_and_visualize.sh
+
+# 自定义可视化样本数（例如20个）
+bash scripts/run_postprocess_and_visualize.sh 803 2d nnUNetTrainerLightMUNet 20
+```
+
+**输出**：
+- 📊 后处理参数：`data/nnUNet_results/.../val_for_pp/postprocessing.pkl`
+- 🔮 原始预测：`data/test_predictions/tta_on/`
+- 🧹 后处理预测：`data/test_predictions/tta_on_pp/`
+- 🖼️ 可视化图片：`data/postprocess_visualization/visualizations/`
+- 📈 统计结果：`data/postprocess_visualization/postprocess_summary.json`
+
+**详细文档**：
+- [推理与可视化指南](docs/inference_and_visualization_guide.md)
+- [后处理详细说明](docs/postprocessing_guide.md)
+
+--- 
 
 # [LightM-UNet](https://arxiv.org/html/2403.05246v1)
 

@@ -31,6 +31,9 @@ export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True,max_split_size_mb:64"  
 export CUDA_LAUNCH_BLOCKING="1"  # Debug CUDA errors
 export PYTORCH_CUDA_ALLOC_CONF="backend:native"  # Use native allocator
 
+# Enable LCC (Largest Connected Component) postprocessing during validation
+export NNUNET_USE_LCC_POSTPROC="1"  # Keep only largest connected region in binary segmentation
+
 # Clear GPU cache
 python -c "import torch; torch.cuda.empty_cache() if torch.cuda.is_available() else None"
 
@@ -91,7 +94,7 @@ echo "   ✅ 每次执行都是全新训练 (epoch 0开始)"
 echo "   ✅ 自动清理所有现有检查点"
 echo "   ✅ 获得完整的训练曲线数据"
 echo "   ✅ 内存优化配置 (4进程, 64MB分割)"
-echo "   ✅ 预期训练时间: ~70小时 (1000 epochs)"
+echo "   ✅ 预期训练时间: ~35-43小时 (500 epochs)"
 echo ""
 echo "🛑 停止训练: kill $PID"
 echo "🏁 训练完成检查: ls -la $LOG_DIR"

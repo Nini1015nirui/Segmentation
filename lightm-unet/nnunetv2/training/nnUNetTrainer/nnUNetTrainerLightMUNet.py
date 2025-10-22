@@ -4,6 +4,8 @@ from nnunetv2.utilities.plans_handling.plans_handler import ConfigurationManager
 from nnunetv2.training.lr_scheduler.polylr import PolyLRScheduler
 from torch import nn
 import torch
+import os
+import numpy as np
 
 from nnunetv2.training.loss.dice import get_tp_fp_fn_tn
 
@@ -25,6 +27,7 @@ class nnUNetTrainerLightMUNet(nnUNetTrainerNoDeepSupervision):
         self.grad_scaler = None
         self.initial_lr = 1e-4
         self.weight_decay = 1e-5
+        self.num_epochs = 500
 
     @staticmethod
     def build_network_architecture(plans_manager: PlansManager,
@@ -93,6 +96,30 @@ class nnUNetTrainerLightMUNet(nnUNetTrainerNoDeepSupervision):
             predicted_segmentation_onehot = torch.zeros(output.shape, device=output.device, dtype=torch.float32)
             predicted_segmentation_onehot.scatter_(1, output_seg, 1)
             del output_seg
+
+        # Optional validation-time postprocessing: keep largest connected component (binary, non-regions)
+        try:
+            use_lcc = os.environ.get('NNUNET_USE_LCC_POSTPROC', '0').lower() in ('1', 'true', 'yes')
+            if use_lcc and (not self.label_manager.has_regions) and output.shape[1] == 2:
+                from scipy import ndimage as ndi
+                # work on CPU numpy for connectivity
+                pred_fg = predicted_segmentation_onehot[:, 1].detach().cpu().numpy().astype(np.uint8)
+                new_fg_list = []
+                for b in range(pred_fg.shape[0]):
+                    lab, num = ndi.label(pred_fg[b])
+                    if num <= 1:
+                        new_fg_list.append(pred_fg[b])
+                    else:
+                        sizes = ndi.sum(pred_fg[b], lab, index=range(1, num + 1))
+                        keep_label = int(np.argmax(sizes)) + 1
+                        new_fg_list.append((lab == keep_label).astype(np.uint8))
+                new_fg = np.stack(new_fg_list, axis=0)
+                new_fg_t = torch.from_numpy(new_fg).to(predicted_segmentation_onehot.device, dtype=predicted_segmentation_onehot.dtype)
+                predicted_segmentation_onehot[:, 1] = new_fg_t
+                predicted_segmentation_onehot[:, 0] = 1 - new_fg_t
+        except Exception:
+            # best-effort: if scipy not available, skip LCC without failing validation
+            pass
 
         if self.label_manager.has_ignore_label:
             if not self.label_manager.has_regions:

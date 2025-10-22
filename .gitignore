@@ -18,10 +18,16 @@ build/
 *.log
 nohup.out
 *.tmp
+logs/
+runs/
+wandb/
 
 # Data outputs (keep raw data local, untracked)
 data/
 TA/
+
+# Local environments
+env/
 
 # OS files
 .DS_Store

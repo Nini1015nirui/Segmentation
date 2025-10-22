@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import numpy as np
 import torch
 import torch.nn as nn
@@ -11,45 +10,9 @@ from monai.networks.blocks.segresnet_block import ResBlock, get_conv_layer, get_
 from monai.networks.layers.factories import Dropout
 from monai.networks.layers.utils import get_act_layer, get_norm_layer
 from monai.utils import UpsampleMode
-# Smart import with fallback for CUDA compatibility
-try:
-    from mamba_ssm import Mamba
-    # Optionally require the real CUDA extension (no fallback)
-    _require_true = os.environ.get('LIGHTMUNET_REQUIRE_TRUE_MAMBA', '0') == '1'
-    if _require_true:
-        # Verify CUDA backend is loadable
-        from mamba_ssm import ops as _ops  # noqa: F401
-        import selective_scan_cuda  # noqa: F401
-    MAMBA_AVAILABLE = True
-except ImportError as e:
-    print(f"Warning: mamba_ssm not available ({e}), using fallback implementation")
-    MAMBA_AVAILABLE = False
-
-    # Simple fallback implementation using identity mapping
-    class MambaFallback(nn.Module):
-        """Fallback implementation when mamba-ssm is not available - uses identity mapping"""
-        def __init__(self, d_model, d_state=16, d_conv=4, expand=2):
-            super().__init__()
-            self.d_model = d_model
-            # Simple linear transformation to maintain compatibility
-            self.linear = nn.Linear(d_model, d_model)
-            self.norm = nn.LayerNorm(d_model)
-
-        def forward(self, x):
-            # x shape: (batch_size, seq_len, d_model)
-            # More robust fallback - handle dimension mismatch safely
-            normalized = self.norm(x)
-            transformed = self.linear(normalized)
-
-            # Safe residual connection with dimension check
-            if x.shape == transformed.shape:
-                return x + transformed
-            else:
-                # If dimensions don't match, return transformed without residual
-                # This maintains model functionality while avoiding dimension errors
-                return transformed
-
-    Mamba = MambaFallback  # Use fallback as Mamba
+from mamba_ssm import Mamba
+# Require real mamba-ssm backend; if import fails, raise ImportError (no fallback)
+MAMBA_AVAILABLE = True
 
 
 def get_dwconv_layer(
@@ -67,20 +30,12 @@ class MambaLayer(nn.Module):
         self.input_dim = input_dim
         self.output_dim = output_dim
         self.norm = nn.LayerNorm(input_dim)
-        if MAMBA_AVAILABLE:
-            self.mamba = Mamba(
-                    d_model=input_dim, # Model dimension d_model
-                    d_state=d_state,  # SSM state expansion factor
-                    d_conv=d_conv,    # Local convolution width
-                    expand=expand,    # Block expansion factor
-            )
-        else:
-            self.mamba = Mamba(
-                    d_model=input_dim,
-                    d_state=d_state,
-                    d_conv=d_conv,
-                    expand=expand
-            )
+        self.mamba = Mamba(
+                d_model=input_dim, # Model dimension d_model
+                d_state=d_state,  # SSM state expansion factor
+                d_conv=d_conv,    # Local convolution width
+                expand=expand,    # Block expansion factor
+        )
         self.proj = nn.Linear(input_dim, output_dim)
         self.skip_scale= nn.Parameter(torch.ones(1))
     
