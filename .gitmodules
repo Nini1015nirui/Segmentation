@@ -1,0 +1,4 @@
+[submodule "upstream-LightM-UNet"]
+	path = upstream-LightM-UNet
+	url = https://github.com/Nini1015nirui/LightM-UNet
+	branch = master

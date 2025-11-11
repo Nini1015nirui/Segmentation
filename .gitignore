@@ -1,0 +1,67 @@
+# Python/cache
+__pycache__/
+*.py[cod]
+*.so
+.ipynb_checkpoints/
+.pytest_cache/
+
+# IDE/project files
+.idea/
+.vscode/
+
+# Build & packaging artifacts
+*.egg-info/
+dist/
+build/
+
+# Logs & temp
+*.log
+nohup.out
+*.tmp
+logs/
+runs/
+wandb/
+
+# Data outputs (keep raw data local, untracked)
+data/
+TA/
+
+# Ignore all images and videos globally (per user request)
+# Images
+*.png
+*.jpg
+*.jpeg
+*.bmp
+*.tif
+*.tiff
+*.gif
+*.webp
+*.svg
+# Videos
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wmv
+*.webm
+*.m4v
+*.mpg
+*.mpeg
+
+# DICOM and ultrasound raw frames (avoid pushing imaging data)
+*.dcm
+*.dicom
+测试vedio
+
+# Local environments
+env/
+
+# Upstream project: include code, ignore its data/logs
+upstream-LightM-UNet/data/
+upstream-LightM-UNet/TA/
+upstream-LightM-UNet/logs/
+upstream-LightM-UNet/runs/
+upstream-LightM-UNet/wandb/
+
+# OS files
+.DS_Store
